@@ -128,7 +128,7 @@ async function init(ctx) {
     borderColor: '#8bb769',
     backgroundColor: '#8bb769',
   }];
-  (await get(data.json)).forEach(s => {
+  (await get('data.json')).forEach(s => {
     labels.push(s.d);
     datasets.forEach((d,i) => d.data.push(s[i+1]));
   });
