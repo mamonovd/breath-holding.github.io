@@ -88,7 +88,7 @@ const config = (data) => ({
   data: data,
   options: {
     responsive: true,
-    pointRadius: 0,
+    pointRadius: 1,
     layout: {
         padding: 40,
     },
