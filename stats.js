@@ -89,6 +89,10 @@ const config = (data) => ({
   options: {
     responsive: true,
     pointRadius: 1,
+    interaction: {
+      intersect: false,
+      mode: 'index',
+    },
     layout: {
         padding: 40,
     },
