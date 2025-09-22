@@ -111,67 +111,141 @@ const config = (data) => ({
 function getData() {
     return new Promise(resolve => { resolve({
   "stats": [
-    { "d": "2025-05-20", "1": 31, "2": 33, "3": 35, "4": 37, "5": 40 },
-    { "d": "2025-05-21", "1": 31, "2": 34, "3": 34, "4": 36, "5": 35 },
-    { "d": "2025-05-21", "1": 31, "2": 34, "3": 34, "4": 36, "5": 35 },
-    { "d": "2025-05-22", "1": 32, "2": null, "3": null, "4": null, "5": null },
-    { "d": "2025-05-23", "1": 34, "2": 34, "3": null, "4": null, "5": null },
-    { "d": "2025-05-24", "1": 32, "2": 33, "3": 29, "4": 32, "5": 27 },
-    { "d": "2025-05-25", "1": 31, "2": 33, "3": 35, "4": 36, "5": 41 },
-    { "d": "2025-05-27", "1": 31, "2": 32, "3": 33, "4": 34, "5": 35 }
+    { "d": "2025-04-30", "t": [26, 30, 34, 32, 46] },
+    { "d": "2025-05-01", "t": [26, 38, 34, 36, 48] },
+    { "d": "2025-05-04", "t": [26, 40, 42, 45, 55] },
+    { "d": "2025-05-05", "t": [10, 41, 40, 55, 40] },
+    { "d": "2025-05-06", "t": [30, 31, 35, 31, 40] },
+    { "d": "2025-05-07", "t": [30, 35, 40, 50, 50] },
+    { "d": "2025-05-08", "t": [26, 31, 35, 32, 35] },
+    { "d": "2025-05-10", "t": [30, 35, 41, 46, 40] },
+    { "d": "2025-05-11", "t": [31, 31, 30, 35, 36] },
+    { "d": "2025-05-14", "t": [30, 35, 41, 46, 40] },
+    { "d": "2025-05-15", "t": [30, 31, 36, 36, 41] },
+    { "d": "2025-05-16", "t": [31, 36, 36, 43, 37] }
   ]
 }
 )});
 }
 
-async function init(ctx) {
-  let labels = [];
-  let datasets = [{
-    label: "1",
-    data: [],
-    borderColor: '#00988e',
-    backgroundColor: '#00988e',
-    cubicInterpolationMode: 'monotone',
-    tension: 0.4,
-  },{
-    label: "2",
-    data: [],
-    borderColor: '#4e6ce2',
-    backgroundColor: '#4e6ce2',
-    cubicInterpolationMode: 'monotone',
-    tension: 0.4,
-  },{
-    label: "3",
-    data: [],
-    borderColor: '#e2ad00',
-    backgroundColor: '#e2ad00',
-    cubicInterpolationMode: 'monotone',
-    tension: 0.4,
-  },{
-    label: "4",
-    data: [],
-    borderColor: '#582540',
-    backgroundColor: '#582540',
-    cubicInterpolationMode: 'monotone',
-    tension: 0.4,
-  },{
-    label: "5",
-    data: [],
-    borderColor: '#8bb769',
-    backgroundColor: '#8bb769',
-    cubicInterpolationMode: 'monotone',
-    tension: 0.4,
-  }];
-  (await get('data.json')).stats.forEach(s => {
-    labels.push(s.d);
-    datasets.forEach((d,i) => d.data.push(s[i+1]));
-  });
+class StatsChart {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.agg = false;
+    this.src = true;
+    this.init();
+    this.load();
+  }
 
-  new Chart(ctx, config({labels, datasets}));
+  init() {
+    const self = this;
+    document.getElementById('src').addEventListener("change", function() {
+      self.src = this.checked
+    });
+    document.getElementById('agg').addEventListener("change", function() {
+      self.agg = this.checked
+    });
+    document.getElementById('reload').addEventListener("click", function() {
+      self.chart.destroy();
+      self.load();
+    });
+  }
+
+  async load() {
+    const labels = [];
+    const datasets = [];
+    const agg = this.agg, src = this.src;
+    if (src) {
+        datasets.push({
+        label: "1",
+        data: [],
+        borderColor: '#00988e66',
+        backgroundColor: '#00988e66',
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+      },{
+        label: "2",
+        data: [],
+        borderColor: '#4e6ce266',
+        backgroundColor: '#4e6ce266',
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+      },{
+        label: "3",
+        data: [],
+        borderColor: '#e2ad0066',
+        backgroundColor: '#e2ad0066',
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+      },{
+        label: "4",
+        data: [],
+        borderColor: '#58254066',
+        backgroundColor: '#58254066',
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+      },{
+        label: "5",
+        data: [],
+        borderColor: '#8bb76966',
+        backgroundColor: '#8bb76966',
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+      });
+    }
+
+    if (agg) {
+      datasets.push({
+        label: "min",
+        data: [],
+        borderColor: '#fd4131',
+        backgroundColor: '#fd4131',
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+      },{
+        label: "avg",
+        data: [],
+        borderColor: '#30fc91',
+        backgroundColor: '#30fc91',
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+      },{
+        label: "max",
+        data: [],
+        borderColor: '#3374fd',
+        backgroundColor: '#3374fd',
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+      });
+    }
+
+    (await get('data.json')).stats.forEach(s => {
+      labels.push(s.d);
+      let min = Infinity, max = -Infinity, avg = 0;
+      s.t.forEach((v,i) => {
+        if (src) {
+          datasets[i].data.push(v);
+        }
+        if (agg) {
+          min = Math.min(min, v);
+          max = Math.max(max, v);
+          avg += v;
+        }
+      });
+      const offset = src ? 5 : 0;
+      if (agg) {
+        datasets[offset].data.push(min);
+        datasets[offset + 1].data.push(avg/5);
+        datasets[offset + 2].data.push(max);
+      }
+    });
+
+    this.chart = new Chart(this.ctx, config({labels, datasets}));
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  init(document.getElementById('myChart'));
+  new StatsChart(document.getElementById('myChart'));
 });
 
 })();
