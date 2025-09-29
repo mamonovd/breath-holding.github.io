@@ -219,7 +219,7 @@ class StatsChart {
       });
     }
 
-    (await get('https://raw.githubusercontent.com/mamonovd/breath-holding.github.io/refs/heads/data/data.json')).stats.forEach(s => {
+    (await get('data.json')).stats.forEach(s => {
       labels.push(s.d);
       let min = Infinity, max = -Infinity, avg = 0;
       s.t.forEach((v,i) => {
