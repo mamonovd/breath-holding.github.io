@@ -27,6 +27,8 @@ async function http(path, config) {
                 } else {
                     if (response.headers.get('Content-Type').includes('application/json')) {
                         return response.json().catch(() => ({}));
+                    } else if (response.headers.get('Content-Type').includes('text/plain')) {
+                        return response.text().catch(() => ({}));
                     } else if (response.headers.get('Content-Type').includes('text/html')) {
                         response.text().then((text) => {
                             if (text.indexOf('<html>') !== -1) {
@@ -219,7 +221,7 @@ class StatsChart {
       });
     }
 
-    (await get('data.json')).stats.forEach(s => {
+    JSON.parse(await get('https://raw.githubusercontent.com/mamonovd/breath-holding.github.io/refs/heads/data/data.json')).stats.forEach(s => {
       labels.push(s.d);
       let min = Infinity, max = -Infinity, avg = 0;
       s.t.forEach((v,i) => {
